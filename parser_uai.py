@@ -1,10 +1,32 @@
 import itertools
 import numpy as np
 import networkx as nx
+from pandas import DataFrame
 from csv_generator import probsHelper
 
 class UAIParser:
-    def __init__(self, filepath: str, nodes: list[str]):
+    """
+    A class to parse a UAI file and generate data from it.
+    
+    Attributes:
+        filepath (str): path to the UAI file
+        nodes (list[str]): list of node names in order of appearance in the UAI file
+        network_type: type of network
+        num_variables: number of variables
+        domain_sizes: list of domain sizes
+        parents: list of parents for each variable
+        tables: list of conditional probability tables
+        graph: networkx DiGraph object representing the network
+        data: pandas DataFrame with the generated data
+    """
+    def __init__(self, filepath: str, nodes: list[str]) -> None:
+        """
+        Initialize the parser with the file path and node names.
+
+        Args:
+            filepath (str): path to the UAI file
+            nodes (list[str]): list of node names in order of appearance in the UAI file
+        """
         self.filepath = filepath
         self.nodes = nodes
         self.network_type = None
@@ -15,7 +37,10 @@ class UAIParser:
         self.graph = nx.DiGraph()
         self.data = []
     
-    def parse(self):
+    def parse(self) -> None:
+        """
+        Parse the UAI file and store the network information.
+        """
         with open(self.filepath, 'r') as file:
             info = file.read().replace('\n', ' ').split()
             index = 0
@@ -69,7 +94,16 @@ class UAIParser:
         for i, title in enumerate(self.nodes):
             nx.relabel_nodes(self.graph, {i: title}, copy=False)
             
-    def calculate_probability(self, outcome):
+    def calculate_probability(self, outcome: list[int]) -> float:
+        """
+        Calculate the probability of a given outcome.
+
+        Args:
+            outcome (list[int]): list of variable values
+
+        Returns:
+            float: probability of the outcome
+        """
         probability = 1.0
 
         for i, value in enumerate(outcome):
@@ -81,21 +115,39 @@ class UAIParser:
 
         return probability
     
-    def calculate_probabilities_for_outcomes(self, outcomes):
+    def calculate_probabilities_for_outcomes(self, outcomes: list[list[int]]) -> list[float]:
+        """
+        Calculate the probabilities of a list of outcomes.
+
+        Args:
+            outcomes (list[list[int]]): list of outcomes
+
+        Returns:
+            list[float]: list of probabilities
+        """
         probabilities = []
         for outcome in outcomes:
             prob = self.calculate_probability(outcome)
             probabilities.append(prob)
         return probabilities
             
-    def generate_data(self):
+    def generate_data(self) -> DataFrame:
+        """
+        Generate data from the network.
+
+        Returns:
+            DataFrame: DataFrame with the generated data
+        """
         outcomes = list(itertools.product([0, 1], repeat=self.num_variables))
         probs = self.calculate_probabilities_for_outcomes(outcomes)
         probabilities = [[sublist, val] for sublist, val in zip(outcomes, probs)]
         self.data = probsHelper(self.nodes, probabilities, csv_flag=False)
         return self.data
         
-    def display(self):
+    def display(self) -> None:
+        """
+        Display the network information.
+        """
         print(f"Tipo de rede: {self.network_type}")
         print(f"Número de variáveis: {self.num_variables}")
         print(f"Tamanhos dos domínios: {self.domain_sizes}")
