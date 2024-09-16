@@ -1,23 +1,33 @@
 import csv
+import pandas as pd
 
 from typing import List, Tuple
 
 ArrayType = List[Tuple[List[int], float]]
 
-def probsHelper(header: str, probCombinations: ArrayType, filename: str):
+def probsHelper(header: str, probCombinations: ArrayType, filename: str = "", csv_flag: bool = True):
     maxDecimals: int = 0
     for _sublist, val in probCombinations:
         probStr: str = str(val)
         if "." in probStr:
             maxDecimals = max(maxDecimals, len(probStr.split(".")[1]))    
 
-    with open("./csv_data_examples/" + filename + ".csv", mode="w", newline="") as file:
-        writer = csv.writer(file)
-        writer.writerow(header)
+    if csv_flag:
+        with open("./csv_data_examples/" + filename + ".csv", mode="w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(header)
+            for sublist, val in probCombinations:
+                numberOfRows: int = (int)(val * pow(10, maxDecimals))            
+                for _ in range(numberOfRows):
+                    writer.writerow(sublist)
+    else:
+        data: List[List[int]] = []
         for sublist, val in probCombinations:
             numberOfRows: int = (int)(val * pow(10, maxDecimals))            
             for _ in range(numberOfRows):
-                writer.writerow(sublist)
+                data.append(sublist)
+        df = pd.DataFrame(data, columns=header)
+        return df
 
 if __name__ == "__main__":
     """
