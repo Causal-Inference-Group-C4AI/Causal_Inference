@@ -138,7 +138,8 @@ class UAIParser:
         Returns:
             DataFrame: DataFrame with the generated data
         """
-        outcomes = list(itertools.product([0, 1], repeat=self.num_variables))
+        values = [list(range(size)) for size in self.domain_sizes]
+        outcomes = list(itertools.product(*values))
         probs = self.calculate_probabilities_for_outcomes(outcomes)
         probabilities = [[sublist, val] for sublist, val in zip(outcomes, probs)]
         self.data = probsHelper(self.nodes, probabilities, csv_flag=False)
