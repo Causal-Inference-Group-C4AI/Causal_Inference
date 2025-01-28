@@ -34,15 +34,18 @@ if __name__ == "__main__":
     Generate a dataset in the csv format which is consistent with the specified distribution. As input, it needs: a header
     row for the csv, the probability of each outcome of the variables and the csv filename.     
     """    
+    pz1 = 0.5
+
     probabilities: ArrayType = [
-        [[0, 0, 0], 0.288],
-        [[0, 0, 1], 0.036],
-        [[0, 1, 0], 0.288],
-        [[0, 1, 1], 0.288],
-        [[1, 0, 0], 0.002],
-        [[1, 0, 1], 0.067],
-        [[1, 1, 0], 0.017],
-        [[1, 1, 1], 0.014],
+        # z  d  y
+        [[0, 0, 0], 0.32*(1-pz1)],
+        [[0, 0, 1], 0.04*(1-pz1)],
+        [[0, 1, 0], 0.32*(1-pz1)],
+        [[0, 1, 1], 0.32*(1-pz1)],
+        [[1, 0, 0], 0.02*pz1],
+        [[1, 0, 1], 0.67*pz1],
+        [[1, 1, 0], 0.17*pz1],
+        [[1, 1, 1], 0.14*pz1],
     ]
 
-    probsHelper(["Z", "X", "Y"], probabilities, "balke_pearl")
+    probsHelper(["Z", "X", "Y"], probabilities, "meio_a_meio_balke_pearl")
